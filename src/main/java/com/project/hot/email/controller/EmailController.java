@@ -45,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/email")
 public class EmailController {
 
+	//왜 final로?
     private final EmailService service;
     private final String fileUploadPath;
 
