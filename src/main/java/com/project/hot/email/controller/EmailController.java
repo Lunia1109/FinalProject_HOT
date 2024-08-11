@@ -547,5 +547,31 @@ public class EmailController {
         return "email/write";
     }
 
+    // 알림
+//    @GetMapping("/subscribe")
+//    public SseEmitter subscribe() {
+//        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+//        this.emitters.add(emitter);
+//
+//        emitter.onCompletion(() -> this.emitters.remove(emitter));
+//        emitter.onTimeout(() -> this.emitters.remove(emitter));
+//
+//        return emitter;
+//    }
+//
+//    private void sendNotification(String message) {
+//        List<SseEmitter> deadEmitters = new ArrayList<>();
+//        this.emitters.forEach(emitter -> {
+//            try {
+//                emitter.send(SseEmitter.event()
+//                        .name("emailNotification")
+//                        .data(message));
+//            } catch (IOException e) {
+//                deadEmitters.add(emitter);
+//            }
+//        });
+//        this.emitters.removeAll(deadEmitters);
+//    }
+
 
 }
