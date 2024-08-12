@@ -1,4 +1,4 @@
-var EmailCommon = {
+const EmailCommon = {
     contextPath: '',
     files: [],
 
@@ -22,12 +22,12 @@ var EmailCommon = {
             e.preventDefault();
             $('.email-link').removeClass('active');
             $(this).addClass('active');
-            var mailbox = $(this).data('mailbox');
+            const mailbox = $(this).data('mailbox');
             EmailCommon.loadMailbox(mailbox);
         });
 
         $(document).off('click', '#permanentDeleteBtn').on('click', '#permanentDeleteBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('영구 삭제할 메일을 선택하세요.');
                 return;
@@ -60,12 +60,12 @@ var EmailCommon = {
         });
 
         $(document).off('change', '.mail-item-checkbox').on('change', '.mail-item-checkbox', function() {
-            var allChecked = $('.mail-item-checkbox:checked').length === $('.mail-item-checkbox').length;
+            const allChecked = $('.mail-item-checkbox:checked').length === $('.mail-item-checkbox').length;
             $('#select-all').prop('checked', allChecked);
         });
 
         $(document).off('click', '#readBtn').on('click', '#readBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('읽음 처리할 메일을 선택하세요.');
                 return;
@@ -74,7 +74,7 @@ var EmailCommon = {
         });
 
         $(document).off('click', '#importantBtn').on('click', '#importantBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('중요 표시할 메일을 선택하세요.');
                 return;
@@ -83,7 +83,7 @@ var EmailCommon = {
         });
 
         $(document).off('click', '#deleteBtn').on('click', '#deleteBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('삭제할 메일을 선택하세요.');
                 return;
@@ -94,7 +94,7 @@ var EmailCommon = {
         });
 
         $(document).off('click', '#searchBtn').on('click', '#searchBtn', function() {
-            var keyword = $('#searchInput').val();
+            const keyword = $('#searchInput').val();
             if (keyword.trim() === '') {
                 alert('검색어를 입력하세요.');
                 return;
@@ -111,7 +111,7 @@ var EmailCommon = {
 
         $(document).off('click', '.email-item').on('click', '.email-item', function(e) {
             if (!$(e.target).is('input:checkbox') && !$(e.target).is('.toggle-important')) {
-                var emailNo = $(this).data('email-no');
+                const emailNo = $(this).data('email-no');
                 EmailCommon.loadEmailContent(emailNo);
             }
         });
@@ -144,7 +144,7 @@ var EmailCommon = {
         });
 
         $(document).off('click', '.remove-file').on('click', '.remove-file', function() {
-            var index = $(this).data('index');
+            const index = $(this).data('index');
             EmailCommon.files.splice(index, 1);
             EmailCommon.updateFileList();
         });
@@ -162,12 +162,12 @@ var EmailCommon = {
         $(document).off('click', '.toggle-important').on('click', '.toggle-important', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var emailNo = $(this).closest('.email-item').data('email-no');
+            const emailNo = $(this).closest('.email-item').data('email-no');
             EmailCommon.toggleImportant([emailNo]);
         });
 
         $(document).off('click', '#restoreBtn').on('click', '#restoreBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('복구할 메일을 선택하세요.');
                 return;
@@ -176,17 +176,17 @@ var EmailCommon = {
         });
 
         $(document).on('click', '.btn-reply', function() {
-            var emailNo = $('#emailNo').val();
+            const emailNo = $('#emailNo').val();
             EmailCommon.replyEmail(emailNo);
         });
 
         $(document).on('click', '.btn-forward', function() {
-            var emailNo = $('#emailNo').val();
+            const emailNo = $('#emailNo').val();
             EmailCommon.forwardEmail(emailNo);
         });
 
         $(document).on('click', '.btn-delete', function() {
-            var emailNo = $('#emailNo').val();
+            const emailNo = $('#emailNo').val();
             EmailCommon.deleteEmail(emailNo);
         });
     },
@@ -198,8 +198,8 @@ var EmailCommon = {
     },
 
     moveSelection: function($highlighted, direction) {
-        var $items = $('#receiversList').find('.receiver-item');
-        var currentIndex = $items.index($highlighted);
+        const $items = $('#receiversList').find('.receiver-item');
+        const currentIndex = $items.index($highlighted);
         $highlighted.removeClass('keyboard-selected');
 
         if (direction === 'down') {
@@ -213,11 +213,11 @@ var EmailCommon = {
     },
 
     ensureVisible: function($element) {
-        var container = $('#receiversList');
-        var containerTop = container.scrollTop();
-        var containerBottom = containerTop + container.height();
-        var elemTop = $element.offset().top - container.offset().top + containerTop;
-        var elemBottom = elemTop + $element.height();
+        const container = $('#receiversList');
+        const containerTop = container.scrollTop();
+        const containerBottom = containerTop + container.height();
+        const elemTop = $element.offset().top - container.offset().top + containerTop;
+        const elemBottom = elemTop + $element.height();
 
         if (elemTop < containerTop) {
             container.scrollTop(elemTop);
@@ -332,7 +332,7 @@ var EmailCommon = {
                 $('#mailContent').html(response);
                 EmailCommon.reattachEventListeners();
 
-                var resultCount = $('#emailList tr').length;
+                const resultCount = $('#emailList tr').length;
                 $('.search-result-count').text('검색 결과: ' + resultCount + '개');
             },
             error: function(xhr, status, error) {
@@ -416,7 +416,7 @@ var EmailCommon = {
     },
 
     handleFiles: function(newFiles) {
-        for (var i = 0; i < newFiles.length; i++) {
+        for (const i = 0; i < newFiles.length; i++) {
             if (!this.files.some(f => f.name === newFiles[i].name)) {
                 this.files.push(newFiles[i]);
             }
@@ -425,12 +425,12 @@ var EmailCommon = {
     },
 
     updateFileList: function() {
-        var fileList = $('#fileList');
+        const fileList = $('#fileList');
         fileList.empty();
-        for (var i = 0; i < this.files.length; i++) {
-            var fileItem = $('<div class="file-item"></div>');
+        for (const i = 0; i < this.files.length; i++) {
+            const fileItem = $('<div class="file-item"></div>');
             fileItem.text(this.files[i].name);
-            var removeBtn = $('<span class="remove-file" data-index="' + i + '">X</span>');
+            const removeBtn = $('<span class="remove-file" data-index="' + i + '">X</span>');
             fileItem.append(removeBtn);
             fileList.append(fileItem);
         }
@@ -440,16 +440,16 @@ var EmailCommon = {
         if (this.isSaving) return;
         this.isSaving = true;
 
-        var formData = new FormData($('#emailForm')[0]);
+        const formData = new FormData($('#emailForm')[0]);
 
-        var receivers = this.getSelectedReceivers();
+        const receivers = this.getSelectedReceivers();
         formData.set('receivers', receivers);
 
         if (!formData.get('receivers')) {
             formData.set('receivers', $('#receivers').val());
         }
 
-        var emailTitle = $('#emailTitle').val().trim();
+        const emailTitle = $('#emailTitle').val().trim();
         formData.set('emailTitle', emailTitle);
 
         formData.set('emailContent', $('#summernote').summernote('code'));
@@ -458,7 +458,7 @@ var EmailCommon = {
             formData.append('attachments', file);
         });
 
-        var url = isDraft ? this.contextPath + '/save-draft' : this.contextPath + '/send';
+        const url = isDraft ? this.contextPath + '/save-draft' : this.contextPath + '/send';
 
         $.ajax({
             url: url,
@@ -486,13 +486,13 @@ var EmailCommon = {
     },
 
     initReceiverAutocomplete: function() {
-        var $receivers = $('#receivers');
-        var $receiversList = $('#receiversList');
-        var $selectedReceivers = $('#selectedReceivers');
-        var debounceTimer;
+        const $receivers = $('#receivers');
+        const $receiversList = $('#receiversList');
+        const $selectedReceivers = $('#selectedReceivers');
+        const debounceTimer;
 
         $receivers.off('input').on('input', function() {
-            var keyword = $(this).val();
+            const keyword = $(this).val();
             clearTimeout(debounceTimer);
 
             debounceTimer = setTimeout(function() {
@@ -505,8 +505,8 @@ var EmailCommon = {
         });
 
         $(document).off('click', '.receiver-item').on('click', '.receiver-item', function() {
-            var email = $(this).data('email');
-            var name = $(this).find('.employee-name').text();
+            const email = $(this).data('email');
+            const name = $(this).find('.employee-name').text();
             EmailCommon.addSelectedReceiver(email, name);
             $receiversList.empty().hide();
             $receivers.val('');
@@ -517,9 +517,9 @@ var EmailCommon = {
         });
 
         $receivers.off('keydown').on('keydown', function(e) {
-            var $items = $receiversList.find('.receiver-item');
-            var $selected = $items.filter('.keyboard-selected');
-            var index = $items.index($selected);
+            const $items = $receiversList.find('.receiver-item');
+            const $selected = $items.filter('.keyboard-selected');
+            const index = $items.index($selected);
 
             switch (e.which) {
                 case 40: // down arrow
@@ -541,8 +541,8 @@ var EmailCommon = {
     },
 
     addSelectedReceiver: function(email, name) {
-        var $selectedReceivers = $('#selectedReceivers');
-        var $tag = $('<span class="selected-receiver"></span>')
+        const $selectedReceivers = $('#selectedReceivers');
+        const $tag = $('<span class="selected-receiver"></span>')
             .text(name + ' <' + email + '>')
             .append('<span class="remove-receiver">×</span>')
             .data('email', email);
@@ -571,7 +571,7 @@ var EmailCommon = {
     },
 
     displayEmployeeList: function(employees) {
-        var $receiversList = $('#receiversList');
+        const $receiversList = $('#receiversList');
         $receiversList.empty();
 
         if (employees.length === 0) {
@@ -580,8 +580,8 @@ var EmailCommon = {
         }
 
         employees.forEach(function(employee, index) {
-            var $item = $('<div class="receiver-item" tabindex="0"></div>');
-            var $nameEmail = $('<span class="name-email"></span>');
+            const $item = $('<div class="receiver-item" tabindex="0"></div>');
+            const $nameEmail = $('<span class="name-email"></span>');
             $nameEmail.append('<span class="employee-name">' + employee.name + '</span>');
             $nameEmail.append('<span class="employee-email">' + employee.email + '</span>');
             $item.append($nameEmail);
@@ -734,7 +734,7 @@ var EmailCommon = {
     reattachEventListeners: function() {
         $('.email-item').off('click').on('click', function(e) {
             if (!$(e.target).is('input:checkbox') && !$(e.target).is('.toggle-important')) {
-                var emailNo = $(this).data('email-no');
+                const emailNo = $(this).data('email-no');
                 EmailCommon.loadEmailContent(emailNo);
             }
         });
@@ -742,12 +742,12 @@ var EmailCommon = {
         $('.toggle-important').off('click').on('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var emailNo = $(this).closest('.email-item').data('email-no');
+            const emailNo = $(this).closest('.email-item').data('email-no');
             EmailCommon.toggleImportant([emailNo]);
         });
 
         $('.mail-item-checkbox').off('change').on('change', function() {
-            var allChecked = $('.mail-item-checkbox:checked').length === $('.mail-item-checkbox').length;
+            const allChecked = $('.mail-item-checkbox:checked').length === $('.mail-item-checkbox').length;
             $('#select-all').prop('checked', allChecked);
         });
 
@@ -814,10 +814,10 @@ var EmailCommon = {
             url: this.contextPath + '/attachments/' + emailNo,
             type: 'GET',
             success: function(attachments) {
-                var $attachmentList = $('#attachmentList');
+                const $attachmentList = $('#attachmentList');
                 $attachmentList.empty();
                 attachments.forEach(function(att) {
-                    var $item = $('<li>')
+                    const $item = $('<li>')
                         .append($('<a>')
                             .text(att.emailAttOriginalFilename)
                             .attr('href', '#')
@@ -837,12 +837,12 @@ var EmailCommon = {
 
 
    downloadAttachment: function(attachmentId, filename) {
-        var url = this.contextPath + '/download/' + attachmentId;
+        const url = this.contextPath + '/download/' + attachmentId;
 
         fetch(url)
             .then(response => response.blob())
             .then(blob => {
-                var link = document.createElement('a');
+                const link = document.createElement('a');
                 link.href = window.URL.createObjectURL(blob);
                 link.download = filename;
                 link.click();
@@ -856,8 +856,8 @@ var EmailCommon = {
     initAttachments: function() {
         $('.download-btn').on('click', function(e) {
             e.preventDefault();
-            var attachmentId = $(this).data('attachment-id');
-            var filename = $(this).data('filename');
+            const attachmentId = $(this).data('attachment-id');
+            const filename = $(this).data('filename');
             EmailCommon.downloadAttachment(attachmentId, filename);
         });
     }
@@ -865,7 +865,7 @@ var EmailCommon = {
 
 // DOM이 로드된 후 실행
 $(document).ready(function() {
-    var contextPath = '/email';
+    const contextPath = '/email';
     EmailCommon.init(contextPath);
     EmailCommon.initAttachments();
     $('#writeBtn').click(function(e) {
