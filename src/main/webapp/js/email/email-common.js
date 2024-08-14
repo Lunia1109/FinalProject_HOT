@@ -10,7 +10,7 @@ const EmailCommon = {
         }
         window.EmailCommonInitialized = true;
 
-        this.contextPath = '/GDJ79_HOT_final' + contextPath;
+        this.contextPath = contextPath;
         this.bindEvents();
         this.updateUnreadCounts();
         this.bindFilterEvents();
@@ -639,7 +639,7 @@ const EmailCommon = {
 
     replyEmail: function(emailNo) {
         $.ajax({
-            url: this.contextPath + '/GDJ79_HOT_final/email/reply/' + emailNo,
+            url: this.contextPath + '/email/reply/' + emailNo,
             type: 'GET',
             success: function(response) {
                 $('#mailContent').html(response);
@@ -654,7 +654,7 @@ const EmailCommon = {
 
     forwardEmail: function(emailNo) {
         $.ajax({
-            url: this.contextPath + '/GDJ79_HOT_final/email/forward/' + emailNo,
+            url: this.contextPath + '/email/forward/' + emailNo,
             type: 'GET',
             success: function(response) {
                 $('#mailContent').html(response);
