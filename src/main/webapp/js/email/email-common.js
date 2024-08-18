@@ -1,6 +1,7 @@
-var EmailCommon = {
+const EmailCommon = {
     contextPath: '',
     files: [],
+    isSaving: false,
 
     init: function(contextPath) {
         if (window.EmailCommonInitialized) {
@@ -9,10 +10,11 @@ var EmailCommon = {
         }
         window.EmailCommonInitialized = true;
 
-        this.contextPath = '/GDJ79_HOT_final' + contextPath;
+        this.contextPath = contextPath;
         this.bindEvents();
-
         this.updateUnreadCounts();
+        this.bindFilterEvents();
+        this.loadFilters();
 
         console.log('EmailCommon initialized with contextPath:', this.contextPath);
     },
@@ -22,12 +24,12 @@ var EmailCommon = {
             e.preventDefault();
             $('.email-link').removeClass('active');
             $(this).addClass('active');
-            var mailbox = $(this).data('mailbox');
+            const mailbox = $(this).data('mailbox');
             EmailCommon.loadMailbox(mailbox);
         });
 
         $(document).off('click', '#permanentDeleteBtn').on('click', '#permanentDeleteBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('영구 삭제할 메일을 선택하세요.');
                 return;
@@ -60,12 +62,12 @@ var EmailCommon = {
         });
 
         $(document).off('change', '.mail-item-checkbox').on('change', '.mail-item-checkbox', function() {
-            var allChecked = $('.mail-item-checkbox:checked').length === $('.mail-item-checkbox').length;
+            const allChecked = $('.mail-item-checkbox:checked').length === $('.mail-item-checkbox').length;
             $('#select-all').prop('checked', allChecked);
         });
 
         $(document).off('click', '#readBtn').on('click', '#readBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('읽음 처리할 메일을 선택하세요.');
                 return;
@@ -74,7 +76,7 @@ var EmailCommon = {
         });
 
         $(document).off('click', '#importantBtn').on('click', '#importantBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('중요 표시할 메일을 선택하세요.');
                 return;
@@ -83,7 +85,7 @@ var EmailCommon = {
         });
 
         $(document).off('click', '#deleteBtn').on('click', '#deleteBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('삭제할 메일을 선택하세요.');
                 return;
@@ -94,7 +96,7 @@ var EmailCommon = {
         });
 
         $(document).off('click', '#searchBtn').on('click', '#searchBtn', function() {
-            var keyword = $('#searchInput').val();
+            const keyword = $('#searchInput').val();
             if (keyword.trim() === '') {
                 alert('검색어를 입력하세요.');
                 return;
@@ -111,7 +113,7 @@ var EmailCommon = {
 
         $(document).off('click', '.email-item').on('click', '.email-item', function(e) {
             if (!$(e.target).is('input:checkbox') && !$(e.target).is('.toggle-important')) {
-                var emailNo = $(this).data('email-no');
+                const emailNo = $(this).data('email-no');
                 EmailCommon.loadEmailContent(emailNo);
             }
         });
@@ -144,7 +146,7 @@ var EmailCommon = {
         });
 
         $(document).off('click', '.remove-file').on('click', '.remove-file', function() {
-            var index = $(this).data('index');
+            const index = $(this).data('index');
             EmailCommon.files.splice(index, 1);
             EmailCommon.updateFileList();
         });
@@ -162,12 +164,12 @@ var EmailCommon = {
         $(document).off('click', '.toggle-important').on('click', '.toggle-important', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var emailNo = $(this).closest('.email-item').data('email-no');
+            const emailNo = $(this).closest('.email-item').data('email-no');
             EmailCommon.toggleImportant([emailNo]);
         });
 
         $(document).off('click', '#restoreBtn').on('click', '#restoreBtn', function() {
-            var selectedEmails = EmailCommon.getSelectedEmails();
+            const selectedEmails = EmailCommon.getSelectedEmails();
             if (selectedEmails.length === 0) {
                 alert('복구할 메일을 선택하세요.');
                 return;
@@ -176,17 +178,17 @@ var EmailCommon = {
         });
 
         $(document).on('click', '.btn-reply', function() {
-            var emailNo = $('#emailNo').val();
+            const emailNo = $('#emailNo').val();
             EmailCommon.replyEmail(emailNo);
         });
 
         $(document).on('click', '.btn-forward', function() {
-            var emailNo = $('#emailNo').val();
+            const emailNo = $('#emailNo').val();
             EmailCommon.forwardEmail(emailNo);
         });
 
         $(document).on('click', '.btn-delete', function() {
-            var emailNo = $('#emailNo').val();
+            const emailNo = $('#emailNo').val();
             EmailCommon.deleteEmail(emailNo);
         });
     },
@@ -198,8 +200,8 @@ var EmailCommon = {
     },
 
     moveSelection: function($highlighted, direction) {
-        var $items = $('#receiversList').find('.receiver-item');
-        var currentIndex = $items.index($highlighted);
+        const $items = $('#receiversList').find('.receiver-item');
+        let currentIndex = $items.index($highlighted);
         $highlighted.removeClass('keyboard-selected');
 
         if (direction === 'down') {
@@ -213,11 +215,11 @@ var EmailCommon = {
     },
 
     ensureVisible: function($element) {
-        var container = $('#receiversList');
-        var containerTop = container.scrollTop();
-        var containerBottom = containerTop + container.height();
-        var elemTop = $element.offset().top - container.offset().top + containerTop;
-        var elemBottom = elemTop + $element.height();
+        const container = $('#receiversList');
+        const containerTop = container.scrollTop();
+        const containerBottom = containerTop + container.height();
+        const elemTop = $element.offset().top - container.offset().top + containerTop;
+        const elemBottom = elemTop + $element.height();
 
         if (elemTop < containerTop) {
             container.scrollTop(elemTop);
@@ -332,7 +334,7 @@ var EmailCommon = {
                 $('#mailContent').html(response);
                 EmailCommon.reattachEventListeners();
 
-                var resultCount = $('#emailList tr').length;
+                const resultCount = $('#emailList tr').length;
                 $('.search-result-count').text('검색 결과: ' + resultCount + '개');
             },
             error: function(xhr, status, error) {
@@ -385,9 +387,10 @@ var EmailCommon = {
                 alert('내게 쓰기 폼을 불러오는데 실패했습니다.');
             }
         });
-    },
 
-   initSummernote: function() {
+        },
+
+    initSummernote: function() {
         $('#summernote').summernote({
             height: 300,
             minHeight: null,
@@ -405,18 +408,17 @@ var EmailCommon = {
                 ['view', ['fullscreen', 'codeview', 'help']]
             ],
             callbacks: {
-            	onInit: function() {
-                	// 이미지 드래그 방지
-                	$(document).on('dragstart', 'img', function(event) {
-                    event.preventDefault();
-              	  });
-            	}
-        	}
+                onInit: function() {
+                    $(document).on('dragstart', 'img', function(event) {
+                        event.preventDefault();
+                    });
+                }
+            }
         });
     },
 
     handleFiles: function(newFiles) {
-        for (var i = 0; i < newFiles.length; i++) {
+        for (let i = 0; i < newFiles.length; i++) {
             if (!this.files.some(f => f.name === newFiles[i].name)) {
                 this.files.push(newFiles[i]);
             }
@@ -425,12 +427,12 @@ var EmailCommon = {
     },
 
     updateFileList: function() {
-        var fileList = $('#fileList');
+        const fileList = $('#fileList');
         fileList.empty();
-        for (var i = 0; i < this.files.length; i++) {
-            var fileItem = $('<div class="file-item"></div>');
+        for (let i = 0; i < this.files.length; i++) {
+            const fileItem = $('<div class="file-item"></div>');
             fileItem.text(this.files[i].name);
-            var removeBtn = $('<span class="remove-file" data-index="' + i + '">X</span>');
+            const removeBtn = $('<span class="remove-file" data-index="' + i + '">X</span>');
             fileItem.append(removeBtn);
             fileList.append(fileItem);
         }
@@ -440,16 +442,16 @@ var EmailCommon = {
         if (this.isSaving) return;
         this.isSaving = true;
 
-        var formData = new FormData($('#emailForm')[0]);
+        const formData = new FormData($('#emailForm')[0]);
 
-        var receivers = this.getSelectedReceivers();
+        const receivers = this.getSelectedReceivers();
         formData.set('receivers', receivers);
 
         if (!formData.get('receivers')) {
             formData.set('receivers', $('#receivers').val());
         }
 
-        var emailTitle = $('#emailTitle').val().trim();
+        const emailTitle = $('#emailTitle').val().trim();
         formData.set('emailTitle', emailTitle);
 
         formData.set('emailContent', $('#summernote').summernote('code'));
@@ -458,7 +460,7 @@ var EmailCommon = {
             formData.append('attachments', file);
         });
 
-        var url = isDraft ? this.contextPath + '/save-draft' : this.contextPath + '/send';
+        const url = isDraft ? this.contextPath + '/save-draft' : this.contextPath + '/send';
 
         $.ajax({
             url: url,
@@ -486,13 +488,13 @@ var EmailCommon = {
     },
 
     initReceiverAutocomplete: function() {
-        var $receivers = $('#receivers');
-        var $receiversList = $('#receiversList');
-        var $selectedReceivers = $('#selectedReceivers');
-        var debounceTimer;
+        const $receivers = $('#receivers');
+        const $receiversList = $('#receiversList');
+        const $selectedReceivers = $('#selectedReceivers');
+        let debounceTimer;
 
         $receivers.off('input').on('input', function() {
-            var keyword = $(this).val();
+            const keyword = $(this).val();
             clearTimeout(debounceTimer);
 
             debounceTimer = setTimeout(function() {
@@ -505,8 +507,8 @@ var EmailCommon = {
         });
 
         $(document).off('click', '.receiver-item').on('click', '.receiver-item', function() {
-            var email = $(this).data('email');
-            var name = $(this).find('.employee-name').text();
+            const email = $(this).data('email');
+            const name = $(this).find('.employee-name').text();
             EmailCommon.addSelectedReceiver(email, name);
             $receiversList.empty().hide();
             $receivers.val('');
@@ -517,9 +519,9 @@ var EmailCommon = {
         });
 
         $receivers.off('keydown').on('keydown', function(e) {
-            var $items = $receiversList.find('.receiver-item');
-            var $selected = $items.filter('.keyboard-selected');
-            var index = $items.index($selected);
+            const $items = $receiversList.find('.receiver-item');
+            const $selected = $items.filter('.keyboard-selected');
+            const index = $items.index($selected);
 
             switch (e.which) {
                 case 40: // down arrow
@@ -541,8 +543,8 @@ var EmailCommon = {
     },
 
     addSelectedReceiver: function(email, name) {
-        var $selectedReceivers = $('#selectedReceivers');
-        var $tag = $('<span class="selected-receiver"></span>')
+        const $selectedReceivers = $('#selectedReceivers');
+        const $tag = $('<span class="selected-receiver"></span>')
             .text(name + ' <' + email + '>')
             .append('<span class="remove-receiver">×</span>')
             .data('email', email);
@@ -571,7 +573,7 @@ var EmailCommon = {
     },
 
     displayEmployeeList: function(employees) {
-        var $receiversList = $('#receiversList');
+        const $receiversList = $('#receiversList');
         $receiversList.empty();
 
         if (employees.length === 0) {
@@ -580,8 +582,8 @@ var EmailCommon = {
         }
 
         employees.forEach(function(employee, index) {
-            var $item = $('<div class="receiver-item" tabindex="0"></div>');
-            var $nameEmail = $('<span class="name-email"></span>');
+            const $item = $('<div class="receiver-item" tabindex="0"></div>');
+            const $nameEmail = $('<span class="name-email"></span>');
             $nameEmail.append('<span class="employee-name">' + employee.name + '</span>');
             $nameEmail.append('<span class="employee-email">' + employee.email + '</span>');
             $item.append($nameEmail);
@@ -607,7 +609,6 @@ var EmailCommon = {
             success: function(response) {
                 console.log('이메일을 읽음으로 표시했습니다.');
                 location.assign(path + '/email/inbox')
-
             },
             error: function(xhr, status, error) {
                 console.error('이메일 읽음 표시 실패:', error);
@@ -626,11 +627,9 @@ var EmailCommon = {
             data: JSON.stringify(emailNos),
             success: function(response) {
                 console.log('이메일의 중요 표시를 변경했습니다.');
-  				location.assign(path + '/email/inbox')
-
+                location.assign(path + '/email/inbox')
                 $('#mailContent').html(response);
                 EmailCommon.reattachEventListeners();
-
             },
             error: function(xhr, status, error) {
                 console.error('중요 표시 변경 실패:', error);
@@ -640,7 +639,7 @@ var EmailCommon = {
 
     replyEmail: function(emailNo) {
         $.ajax({
-            url: this.contextPath + '/GDJ79_HOT_final/email/reply/' + emailNo,
+            url: this.contextPath + '/email/reply/' + emailNo,
             type: 'GET',
             success: function(response) {
                 $('#mailContent').html(response);
@@ -655,7 +654,7 @@ var EmailCommon = {
 
     forwardEmail: function(emailNo) {
         $.ajax({
-            url: this.contextPath + '/GDJ79_HOT_final/email/forward/' + emailNo,
+            url: this.contextPath + '/email/forward/' + emailNo,
             type: 'GET',
             success: function(response) {
                 $('#mailContent').html(response);
@@ -734,7 +733,7 @@ var EmailCommon = {
     reattachEventListeners: function() {
         $('.email-item').off('click').on('click', function(e) {
             if (!$(e.target).is('input:checkbox') && !$(e.target).is('.toggle-important')) {
-                var emailNo = $(this).data('email-no');
+                const emailNo = $(this).data('email-no');
                 EmailCommon.loadEmailContent(emailNo);
             }
         });
@@ -742,12 +741,12 @@ var EmailCommon = {
         $('.toggle-important').off('click').on('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var emailNo = $(this).closest('.email-item').data('email-no');
+            const emailNo = $(this).closest('.email-item').data('email-no');
             EmailCommon.toggleImportant([emailNo]);
         });
 
         $('.mail-item-checkbox').off('change').on('change', function() {
-            var allChecked = $('.mail-item-checkbox:checked').length === $('.mail-item-checkbox').length;
+            const allChecked = $('.mail-item-checkbox:checked').length === $('.mail-item-checkbox').length;
             $('#select-all').prop('checked', allChecked);
         });
 
@@ -763,7 +762,7 @@ var EmailCommon = {
             contentType: 'application/json',
             data: JSON.stringify(emailNos),
             success: function(response) {
-     				location.assign(path + '/email/trash')
+                location.assign(path + '/email/trash')
             },
             error: function(xhr, status, error) {
                 alert("읽음 처리 중 오류가 발생했습니다: " + xhr.responseText);
@@ -814,10 +813,10 @@ var EmailCommon = {
             url: this.contextPath + '/attachments/' + emailNo,
             type: 'GET',
             success: function(attachments) {
-                var $attachmentList = $('#attachmentList');
+                const $attachmentList = $('#attachmentList');
                 $attachmentList.empty();
                 attachments.forEach(function(att) {
-                    var $item = $('<li>')
+                    const $item = $('<li>')
                         .append($('<a>')
                             .text(att.emailAttOriginalFilename)
                             .attr('href', '#')
@@ -835,14 +834,13 @@ var EmailCommon = {
         });
     },
 
-
-   downloadAttachment: function(attachmentId, filename) {
-        var url = this.contextPath + '/download/' + attachmentId;
+    downloadAttachment: function(attachmentId, filename) {
+        const url = this.contextPath + '/download/' + attachmentId;
 
         fetch(url)
             .then(response => response.blob())
             .then(blob => {
-                var link = document.createElement('a');
+                const link = document.createElement('a');
                 link.href = window.URL.createObjectURL(blob);
                 link.download = filename;
                 link.click();
@@ -856,18 +854,153 @@ var EmailCommon = {
     initAttachments: function() {
         $('.download-btn').on('click', function(e) {
             e.preventDefault();
-            var attachmentId = $(this).data('attachment-id');
-            var filename = $(this).data('filename');
+            const attachmentId = $(this).data('attachment-id');
+            const filename = $(this).data('filename');
             EmailCommon.downloadAttachment(attachmentId, filename);
+        });
+    },
+
+    // 필터 관련 새로운 메소드들
+
+    saveFilter: function(filter) {
+        $.ajax({
+            url: this.contextPath + '/save-filter',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(filter),
+            success: function(response) {
+                alert('필터가 성공적으로 저장되었습니다.');
+                EmailCommon.loadFilters();
+            },
+            error: function(xhr, status, error) {
+                console.error('필터 저장 실패:', error);
+                alert('필터 저장에 실패했습니다.');
+            }
+        });
+    },
+
+    loadFilters: function() {
+        $.ajax({
+            url: this.contextPath + '/get-filters',
+            type: 'GET',
+            success: function(filters) {
+                EmailCommon.displayFilters(filters);
+            },
+            error: function(xhr, status, error) {
+                console.error('필터 목록 로드 실패:', error);
+            }
+        });
+    },
+
+    displayFilters: function(filters) {
+        const $filterList = $('#filterList');
+        $filterList.empty();
+        filters.forEach(function(filter) {
+            const $filterItem = $('<div class="filter-item"></div>');
+            $filterItem.text(filter.name);
+            $filterItem.append('<button class="edit-filter" data-filter-id="' + filter.id + '">수정</button>');
+            $filterItem.append('<button class="delete-filter" data-filter-id="' + filter.id + '">삭제</button>');
+            $filterList.append($filterItem);
+        });
+    },
+
+    applyFilter: function(filterId) {
+        $.ajax({
+            url: this.contextPath + '/apply-filter/' + filterId,
+            type: 'GET',
+            success: function(response) {
+                $('#mailContent').html(response);
+                EmailCommon.reattachEventListeners();
+            },
+            error: function(xhr, status, error) {
+                console.error('필터 적용 실패:', error);
+                alert('필터 적용에 실패했습니다.');
+            }
+        });
+    },
+
+    showFilterForm: function(filterId = null) {
+        let url = this.contextPath + '/filter-form';
+        if (filterId) {
+            url += '/' + filterId;
+        }
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            success: function(response) {
+                $('#mailContent').html(response);
+                EmailCommon.initFilterForm();
+            },
+            error: function() {
+                alert('필터 설정 폼을 불러오는데 실패했습니다.');
+            }
+        });
+    },
+
+    initFilterForm: function() {
+        $('#filterForm').submit(function(e) {
+            e.preventDefault();
+            const filter = {
+                name: $('#filterName').val(),
+                sender: $('#filterSender').val(),
+                subject: $('#filterSubject').val(),
+                content: $('#filterContent').val(),
+                hasAttachment: $('#filterHasAttachment').is(':checked'),
+                action: {
+                    type: $('#filterActionType').val(),
+                    value: $('#filterActionValue').val()
+                }
+            };
+            EmailCommon.saveFilter(filter);
+        });
+    },
+
+    deleteFilter: function(filterId) {
+        if (confirm('이 필터를 삭제하시겠습니까?')) {
+            $.ajax({
+                url: this.contextPath + '/delete-filter/' + filterId,
+                type: 'POST',
+                success: function(response) {
+                    alert('필터가 삭제되었습니다.');
+                    EmailCommon.loadFilters();
+                },
+                error: function(xhr, status, error) {
+                    console.error('필터 삭제 실패:', error);
+                    alert('필터 삭제에 실패했습니다.');
+                }
+            });
+        }
+    },
+
+    bindFilterEvents: function() {
+        $(document).on('click', '#showFilterFormBtn', function() {
+            EmailCommon.showFilterForm();
+        });
+
+        $(document).on('click', '.edit-filter', function() {
+            const filterId = $(this).data('filter-id');
+            EmailCommon.showFilterForm(filterId);
+        });
+
+        $(document).on('click', '.delete-filter', function() {
+            const filterId = $(this).data('filter-id');
+            EmailCommon.deleteFilter(filterId);
+        });
+
+        $(document).on('click', '.apply-filter', function() {
+            const filterId = $(this).data('filter-id');
+            EmailCommon.applyFilter(filterId);
         });
     }
 };
 
 // DOM이 로드된 후 실행
 $(document).ready(function() {
-    var contextPath = '/email';
+    const contextPath = '/email';
     EmailCommon.init(contextPath);
     EmailCommon.initAttachments();
+
     $('#writeBtn').click(function(e) {
         e.preventDefault();
         EmailCommon.showWriteForm();
@@ -877,4 +1010,7 @@ $(document).ready(function() {
         e.preventDefault();
         EmailCommon.showSelfWriteForm();
     });
+
+    // 필터 관련 버튼 추가
+    $('#mailboxButtons').append('<button id="showFilterFormBtn">필터 설정</button>');
 });

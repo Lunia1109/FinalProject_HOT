@@ -1,4 +1,4 @@
-var EmailView = {
+const EmailView = {
     init: function() {
         this.bindEvents();
     },
@@ -6,23 +6,23 @@ var EmailView = {
     bindEvents: function() {
         $(document).on('click', '.email-item', function(e) {
             if (!$(e.target).is('input:checkbox')) {
-                var emailNo = $(this).data('email-no');
+                const emailNo = $(this).data('email-no');
                 EmailView.loadEmailContent(emailNo);
             }
         });
 
         $(document).on('click', '.btn-reply', function() {
-            var emailNo = $('#emailNo').val();
+            const emailNo = $('#emailNo').val();
             EmailView.replyEmail(emailNo);
         });
 
         $(document).on('click', '.btn-forward', function() {
-            var emailNo = $('#emailNo').val();
+            const emailNo = $('#emailNo').val();
             EmailView.forwardEmail(emailNo);
         });
 
         $(document).on('click', '.btn-delete', function() {
-            var emailNo = $('#emailNo').val();
+            const emailNo = $('#emailNo').val();
             EmailView.deleteEmail(emailNo);
         });
     },
@@ -42,9 +42,9 @@ var EmailView = {
     },
 
     replyEmail: function(emailNo) {
-        var senderEmail = $('.sender-email').text().trim();
-        var emailTitle = $('.email-title').text().trim();
-        var emailContent = $('.email-content').html();
+        const senderEmail = $('.sender-email').text().trim();
+        const emailTitle = $('.email-title').text().trim();
+        const emailContent = $('.email-content').html();
 
         // URL에서 .jsp 제거 및 파라미터 인코딩
         window.location.href = EmailCommon.contextPath + '/write?action=reply' +
@@ -54,8 +54,8 @@ var EmailView = {
     },
 
     forwardEmail: function(emailNo) {
-        var emailTitle = $('.email-title').text().trim();
-        var emailContent = $('.email-content').html();
+        const emailTitle = $('.email-title').text().trim();
+        const emailContent = $('.email-content').html();
 
         // URL에서 .jsp 제거 및 파라미터 인코딩
         window.location.href = EmailCommon.contextPath + '/write?action=forward' +

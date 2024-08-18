@@ -45,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/email")
 public class EmailController {
 
+	//왜 final로?
     private final EmailService service;
     private final String fileUploadPath;
 
@@ -512,6 +513,13 @@ public class EmailController {
                                originalEmail.getEmailContent();
         replyEmail.setEmailContent(quotedContent);
 
+//        String forwardedContent = "\n\n-------- 전달된 메시지 --------\n" +
+//                "보낸사람: " + originalEmail.getSender().getEmployeeName() + "\n" +
+//                "날짜: " + originalEmail.getEmailSendDate() + "\n" +
+//                "제목: " + originalEmail.getEmailTitle() + "\n\n" +
+//                originalEmail.getEmailContent();
+//forwardEmail.setEmailContent(forwardedContent);
+
         model.addAttribute("email", replyEmail);
         return "email/write";
     }
@@ -521,7 +529,7 @@ public class EmailController {
         Email originalEmail = service.getEmailByNo(emailNo);
         Email forwardEmail = new Email();
 
-        // 제목에 "Fwd: " 추가
+
         forwardEmail.setEmailTitle("Fwd: " + originalEmail.getEmailTitle());
 
         // 원본 이메일 내용을 포워딩 형식으로 본문에 추가
@@ -538,6 +546,32 @@ public class EmailController {
         model.addAttribute("email", forwardEmail);
         return "email/write";
     }
+
+    // 알림
+//    @GetMapping("/subscribe")
+//    public SseEmitter subscribe() {
+//        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+//        this.emitters.add(emitter);
+//
+//        emitter.onCompletion(() -> this.emitters.remove(emitter));
+//        emitter.onTimeout(() -> this.emitters.remove(emitter));
+//
+//        return emitter;
+//    }
+//
+//    private void sendNotification(String message) {
+//        List<SseEmitter> deadEmitters = new ArrayList<>();
+//        this.emitters.forEach(emitter -> {
+//            try {
+//                emitter.send(SseEmitter.event()
+//                        .name("emailNotification")
+//                        .data(message));
+//            } catch (IOException e) {
+//                deadEmitters.add(emitter);
+//            }
+//        });
+//        this.emitters.removeAll(deadEmitters);
+//    }
 
 
 }

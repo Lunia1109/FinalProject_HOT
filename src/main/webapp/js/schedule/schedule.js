@@ -3,7 +3,7 @@ $(document).ready(function() {
     rebindCheckboxEvents();
 
     // 메인 캘린더 초기화
-    var calendar = $('#calendar').fullCalendar({
+    const calendar = $('#calendar').fullCalendar({
         googleCalendarApiKey: "AIzaSyDSnYZPXQu0qUmI0h4YBe7djb7tP9IMDqE",
         header: {
             left: 'prev,next today',
@@ -28,7 +28,7 @@ $(document).ready(function() {
                         type: 'GET',
                         dataType: 'json',
                         success: function(events) {
-                            var filteredEvents = events.filter(function(event) {
+                            const filteredEvents = events.filter(function(event) {
                                 return $('.schedule-checkbox[data-id="' + event.id + '"]').is(':checked');
                             });
                             companySchedules.forEach(function(schedule) {
@@ -70,7 +70,7 @@ $(document).ready(function() {
                 return true;
             } else {
                 element.find('.fc-time').remove();
-                var title = event.title;
+                const title = event.title;
                 if (title.length <= 5) {
                     element.addClass('short');
                 } else if (title.length <= 15) {
@@ -100,9 +100,9 @@ $(document).ready(function() {
         },
         eventAfterAllRender: function(view) {
             console.log('All events rendered');
-            var allEvents = $('#calendar').fullCalendar('clientEvents');
+            const allEvents = $('#calendar').fullCalendar('clientEvents');
             console.log('Total events:', allEvents.length);
-            var googleEvents = allEvents.filter(function(event) {
+            const googleEvents = allEvents.filter(function(event) {
                 return event.source.googleCalendarId;
             });
             console.log('Google Calendar events:', googleEvents.length);
@@ -151,16 +151,16 @@ $(document).ready(function() {
 
     // 섹션 체크박스 이벤트 바인딩
     $('.section-checkbox').on('change', function() {
-        var isChecked = $(this).prop('checked');
-        var section = $(this).data('section');
+        const isChecked = $(this).prop('checked');
+        const section = $(this).data('section');
         $(`.schedule-checkbox[data-type="${section}"]`).prop('checked', isChecked).trigger('change');
     });
 
     // 체크박스 변경 -> 캘린더 이벤트 다시 불러오기
     $(document).on('change', '.schedule-checkbox', function() {
-        var scheduleId = $(this).data('id');
-        var isChecked = $(this).prop('checked');
-        var scheduleType = $(this).data('type');
+        const scheduleId = $(this).data('id');
+        const isChecked = $(this).prop('checked');
+        const scheduleType = $(this).data('type');
         localStorage.setItem('schedule_' + scheduleId, isChecked);
         updateSectionCheckbox(scheduleType);
         $('#calendar').fullCalendar('refetchEvents');
@@ -176,7 +176,7 @@ $(document).ready(function() {
     $('.color-option').click(function() {
         $(this).siblings().removeClass('selected');
         $(this).addClass('selected');
-        var color = $(this).data('color');
+        const color = $(this).data('color');
         $(this).closest('.form-group').find('input[type="hidden"]').val(color);
     });
 
@@ -203,7 +203,7 @@ $(document).ready(function() {
         $('#viewScheduleEnd').attr('min', moment(event.start).format('YYYY-MM-DD'));
         $('#viewScheduleAllDay').prop('checked', event.allDay);
 
-        var color = event.color || '#0000FF';
+        const color = event.color || '#0000FF';
         $('#viewScheduleColor').val(color);
         $(`.color-option[data-color="${color}"]`).click();
 
@@ -250,7 +250,7 @@ $(document).ready(function() {
     // 일정 추가 폼 제출
     $('#addScheduleForm').submit(function(e) {
         e.preventDefault();
-        var newSchedule = {
+        const newSchedule = {
             title: $('#scheduleTitle').val(),
             location: $('#schedulePlace').val(),
             description: $('#scheduleContent').val(),
@@ -282,14 +282,14 @@ $(document).ready(function() {
     // 체크박스 이벤트 다시 바인딩 함수
     function rebindCheckboxEvents() {
         $('.schedule-checkbox').off('change').on('change', function() {
-            var scheduleId = $(this).data('id');
-            var isChecked = $(this).prop('checked');
-            var scheduleType = $(this).data('type');
+            const scheduleId = $(this).data('id');
+            const isChecked = $(this).prop('checked');
+            const scheduleType = $(this).data('type');
             localStorage.setItem('schedule_' + scheduleId, isChecked);
             updateSectionCheckbox(scheduleType);
 
             if (isChecked) {
-                var event = getEventById(scheduleId);
+                const event = getEventById(scheduleId);
                 if (event) {
                     $('#calendar').fullCalendar('renderEvent', event, true);
                 }
@@ -301,7 +301,7 @@ $(document).ready(function() {
 
     // 섹션 체크박스 상태 업데이트 함수
     function updateSectionCheckbox(scheduleType) {
-        var allChecked = $(`.schedule-checkbox[data-type="${scheduleType}"]`).length ===
+        const allChecked = $(`.schedule-checkbox[data-type="${scheduleType}"]`).length ===
                          $(`.schedule-checkbox[data-type="${scheduleType}"]:checked`).length;
         $(`.section-checkbox[data-section="${scheduleType}"]`).prop('checked', allChecked);
     }
@@ -315,7 +315,7 @@ $(document).ready(function() {
     // 일정 수정 폼 제출
     $('#updateScheduleForm').submit(function(e) {
         e.preventDefault();
-        var updatedSchedule = {
+        const updatedSchedule = {
             id: $('#viewScheduleId').val(),
             title: $('#viewScheduleTitle').val(),
             location: $('#viewSchedulePlace').val(),
@@ -334,7 +334,7 @@ $(document).ready(function() {
 
     // 일정 삭제 버튼 클릭 이벤트
     $('#deleteScheduleBtn').click(function() {
-        var scheduleId = $('#viewScheduleId').val();
+        const scheduleId = $('#viewScheduleId').val();
 
         if (!scheduleId || scheduleId === '0') {
             console.error('Invalid schedule ID for deletion');
@@ -362,7 +362,7 @@ $(document).ready(function() {
 
     // 일정 타입 변경 시 참석자 선택 영역 표시/숨김
     $('input[name="scheduleType"], input[name="viewScheduleType"]').on('change', function() {
-        var prefix = $(this).attr('name') === 'scheduleType' ? '' : 'view';
+        const prefix = $(this).attr('name') === 'scheduleType' ? '' : 'view';
         if ($(this).val() === 'share') {
             $(`#${prefix}participantSelection`).show();
         } else {
@@ -445,7 +445,7 @@ $(document).ready(function() {
 
     // 일정 수정 (드래그 + 모달)
     function updateSchedule(event, isDragUpdate) {
-        var updatedSchedule = {
+        const updatedSchedule = {
             id: event.id,
             title: event.title,
             start: event.start.format ? event.start.format() : event.start,
@@ -501,7 +501,7 @@ $(document).ready(function() {
             url: path + '/schedule/',
             type: 'GET',
             success: function(response) {
-                var $html = $(response);
+                const $html = $(response);
                 $('.calendar-legend').html($html.find('.calendar-legend').html());
                 rebindToggleHeaders();
                 restoreCheckboxStates();
@@ -514,8 +514,8 @@ $(document).ready(function() {
 
 function restoreCheckboxStates() {
         $('.schedule-checkbox').each(function() {
-            var scheduleId = $(this).data('id');
-            var isChecked = localStorage.getItem('schedule_' + scheduleId) !== 'false';
+            const scheduleId = $(this).data('id');
+            const isChecked = localStorage.getItem('schedule_' + scheduleId) !== 'false';
             $(this).prop('checked', isChecked);
         });
 
@@ -535,7 +535,7 @@ function restoreCheckboxStates() {
 
     // ID로 이벤트 찾기
     function getEventById(id) {
-        var event = null;
+        const event = null;
         $('#calendar').fullCalendar('clientEvents', function(evt) {
             if (evt.id == id) {
                 event = evt;
@@ -555,7 +555,7 @@ function restoreCheckboxStates() {
     // 전사일정 폼 제출
     $("#addCompanyScheduleForm").submit(function(e) {
         e.preventDefault();
-        var formData = {
+        const formData = {
             title: $("#companyScheduleTitle").val(),
             description: $("#companyScheduleContent").val(),
             location: $("#companySchedulePlace").val(),
@@ -586,14 +586,14 @@ function restoreCheckboxStates() {
     $('.company-color-option').click(function() {
         $(this).siblings().removeClass('selected');
         $(this).addClass('selected');
-        var color = $(this).data('color');
+        const color = $(this).data('color');
         $('#companyScheduleColor').val(color);
     });
 
     // 전사일정 모달의 날짜 입력 유효성 검사
     $('#companyScheduleDate, #companyScheduleEnd').on('change', function() {
-        var startDate = $('#companyScheduleDate').val();
-        var endDate = $('#companyScheduleEnd').val();
+        const startDate = $('#companyScheduleDate').val();
+        const endDate = $('#companyScheduleEnd').val();
 
         if (startDate && endDate && endDate < startDate) {
             alert('종료 날짜는 시작 날짜 이후여야 합니다.');
