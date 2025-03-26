@@ -71,7 +71,7 @@
   <br>
   <div markdown="1">
     <ul>
-      <img src="https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fa4dad6af-2889-4f24-849e-36828eac7662%2F1d0bb550-7972-42de-ab59-91f2272076c3%2FUntitled.png?table=block&id=38b10326-93c9-4e88-ad75-0c8a5f4216d9&spaceId=a4dad6af-2889-4f24-849e-36828eac7662&width=2000&userId=17bae69d-6413-43c4-854c-4fa3895934cb&cache=v2"/>
+      <img src="https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fa4dad6af-2889-4f24-849e-36828eac7662%2Fcdccf799-e716-48be-bd17-2d9584782f8e%2Feec45b38-55bd-43e9-b840-510ed17d114a.png?table=block&id=38b10326-93c9-4e88-ad75-0c8a5f4216d9&spaceId=a4dad6af-2889-4f24-849e-36828eac7662&width=2000&userId=17bae69d-6413-43c4-854c-4fa3895934cb&cache=v2"/>
       <em> 개인 채팅방의 경우 상단에 상대방의 상태 및 상태 메세지가 출력되며 그룹 채팅방의 경우 채팅방 이름, 채팅방 개설 일자가 출력됨 </em>
     </ul>
   </div>
