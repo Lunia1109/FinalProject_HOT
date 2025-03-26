@@ -35,13 +35,8 @@
 
 ## 📃 WBS 및 ERD
 <details>
-  <summary><b>WBS</b></summary>
+  <summary><b><a href="https://docs.google.com/spreadsheets/d/1NAzd36SRPOj5ouFQyb07qfDOR5NCiR0Whcq16HT539w/edit?usp=sharing"/>WBS</b></summary>
   <br>
-  <div markdown="1">
-    <ul>
-      <img src="https://www.notion.so/image/https%3A%2F%2Fprod-files-secure.s3.us-west-2.amazonaws.com%2Fa4dad6af-2889-4f24-849e-36828eac7662%2F121c0abb-b926-416e-a1ee-b3467ccd8bda%2FUntitled.png?table=block&id=42a5f2b1-81dd-48c5-a524-1e9bc27d6fc4&spaceId=a4dad6af-2889-4f24-849e-36828eac7662&width=2000&userId=17bae69d-6413-43c4-854c-4fa3895934cb&cache=v2"/>
-    </ul>
-  </div>
 </details>
 
 <details>
