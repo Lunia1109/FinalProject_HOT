@@ -193,6 +193,33 @@
 ### 해당 프로젝트에서 무엇을 배웠는가 ?
 <ul align="justify">
   <li>
+    <b>다중 테이블 JOIN으로 인한 성능 저하</b> <br>
+    <ul>
+      <li>
+        Oracle 옵티마이저를 통해 기존의 문제점(Table Full Scan 방식)을 확인
+      </li>
+      <li>
+        Foreign key로 사용되고 있는 ID 컬럼에 Index 전략을 수립하여 Index Scan 방식으로 변화하여 기존 실행시간 대비 85% 줄어든 실행 시간을 기록
+      </li>
+      <li>
+        관련된 Velog 글 : 🔗<a href="https://velog.io/@lunia1109/TIL-24.08.01">트러블슈팅 기록 링크</a>
+      </li>
+    </ul>
+  </li>
+  <br>
+  <li>
+    <b>알림기능 구현을 위한 SSE 기반 단방향 통신 구현</b> <br>
+    <ul>
+      <li>
+        HTTP / HTTPS와 높은 호환성과 단순한 구현 방식으로 인해 해당 프로젝트에서 WebSocket 방식보다는 더욱 적합하다고 판단 후 도입
+      </li>
+      <li>
+        관련된 Velog 글 : 🔗<a href="https://velog.io/@lunia1109/TIL-24.07.21">트러블슈팅 기록 링크</a>
+      </li>
+    </ul>
+  </li>
+  <br>
+  <li>
     <b>능동적으로 학습하여 구현할 수 있다는 사실</b> <br>
     <ul>
       <li>
